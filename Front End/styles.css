@@ -33,7 +33,7 @@
 
 /* Input box */
 #message {
-    /*flex-grow: 1; /* Makes input take up most of the horizontal space */
+    flex-grow: 1; /* Makes input take up most of the horizontal space */
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 3px;

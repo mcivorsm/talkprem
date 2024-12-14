@@ -5,10 +5,14 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import jakarta.websocket.OnClose;
+import jakarta.websocket.Session;
+
 public class MyWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         System.out.println("New client connected: " + session.getId());
+      
     }
 
       @Override
@@ -20,5 +24,11 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("Client disconnected: " + session.getId());
+    }
+
+    @OnClose
+    public void handleClose(Session session){
+        activeSessions.remove(session.getId());
+        
     }
 }
