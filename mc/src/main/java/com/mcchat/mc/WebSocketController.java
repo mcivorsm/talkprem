@@ -1,14 +1,20 @@
 package com.mcchat.mc;
 
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class WebSocketController {
     
-    @MessageMapping("/send")
-    @SendTo("/chatroom/messages")
-    public String sendMessage(String message){
-        return message;
+
+    @GetMapping("/chatroom")
+    public String chatPage() {
+        return "index";  
     }
+
+   /*  @MessageMapping("/sendMessage") 
+    @SendTo("/chatroom/messages")  
+    public String sendMessage(String message) {
+        System.out.println("Received message: " + message);
+        return message; 
+    }*/
 }

@@ -3,25 +3,25 @@ package com.mcchat.mc;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
-
-import jakarta.websocket.Session;
+import org.springframework.web.socket.WebSocketSession;
 
 @Component
 public class WebSocketSessionManager {
-    private final ConcurrentHashMap<String, Session> activeSessions = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, WebSocketSession> activeSessions = new ConcurrentHashMap<>();
 
-    public void addSession(Session session) {
+    public void addSession(WebSocketSession session) {
         activeSessions.put(session.getId(), session);
         System.out.println("New session added: " + session.getId());
     }
 
-    public void removeSession(Session session) {
+    public void removeSession(WebSocketSession session) {
         activeSessions.remove(session.getId());
         System.out.println("Session removed: " + session.getId());
     }
 
-    public ConcurrentHashMap<String, Session> getActiveSessions() {
+    public ConcurrentHashMap<String, WebSocketSession> getActiveSessions() {
         return activeSessions;
     }
     
+ 
 }
