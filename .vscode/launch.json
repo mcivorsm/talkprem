@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-McApplication<mc>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.mcchat.mc.McApplication",
+            "projectName": "mc",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

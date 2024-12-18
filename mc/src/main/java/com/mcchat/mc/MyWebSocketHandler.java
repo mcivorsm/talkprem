@@ -1,5 +1,7 @@
 package com.mcchat.mc;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -14,10 +16,16 @@ import jakarta.websocket.OnClose;
 public class MyWebSocketHandler extends TextWebSocketHandler {
     @Autowired
     private final WebSocketSessionManager sessionManager = new WebSocketSessionManager();
+     private final ConcurrentHashMap<String, String> activeAliases = new ConcurrentHashMap<>();
+
+     private  String sessionId;
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         System.out.println("New client connected: " + session.getId());
         sessionManager.addSession(session);
+        this.sessionId = session.getId();
+        String alias = generateAlias();
+        activeAliases.put(session.getId(), alias);
       
     }
 
@@ -34,6 +42,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         System.out.println("Client disconnected: " + session.getId());
+        activeAliases.remove(session.getId());
         sessionManager.removeSession(session);
     }
 
@@ -43,5 +52,26 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
 
     }
 
+    public String generateAlias(){
+      String alias = "";
+      while(!activeAliases.containsValue(alias)){
+        alias = "User" + (int)(Math.random() * 10000);
+      }
+    
+      return alias;
+    }
+    public boolean changeAlias(String alias){
+        for(String abc: activeAliases.values()){
+            if(alias.equals(abc)){
+                return false;
+            }
+        }
+        activeAliases.put(this.sessionId, alias);
+        return true;
+    }
+
+    public String getSessionIdByAlias(String alias) {
+        return activeAliases.get(alias);
+    }
    
 }

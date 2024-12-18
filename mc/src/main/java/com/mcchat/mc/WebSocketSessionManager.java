@@ -8,6 +8,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Component
 public class WebSocketSessionManager {
     private final ConcurrentHashMap<String, WebSocketSession> activeSessions = new ConcurrentHashMap<>();
+   
 
     public void addSession(WebSocketSession session) {
         activeSessions.put(session.getId(), session);
@@ -22,6 +23,6 @@ public class WebSocketSessionManager {
     public ConcurrentHashMap<String, WebSocketSession> getActiveSessions() {
         return activeSessions;
     }
-    
+  
  
 }

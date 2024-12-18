@@ -1,38 +1,56 @@
 
 
-const socket = new WebSocket("/websocket");
-const stompClient = Stomp.over(socket);
+const socket = new WebSocket("ws://localhost:8080/websocket");
 
-stompClient.connect({}, function(frame){
-    console.log('Connected ' + frame);
-    stompClient.subscribe('/chatroom/messages', function (response) {
-        const message = response.body;
-        displayMessage(message);
-});
-});
+socket.onopen = function () {
+    console.log("WebSocket connection established.");
+};
+
+socket.onmessage = function (event) {
+    console.log("Message received from server:", event.data);
+    displayMessage(event.data);
+};
+
+socket.onclose = function (event) {
+    console.log("WebSocket connection closed:", event);
+};
 
 function sendMessage() {
-    const messageInput = document.getElementById('messageInput');
+    const messageInput = document.getElementById('message');
     const message = messageInput.value.trim();
 
     if (message !== '') {
-        stompClient.send('/app/sendM', {}, message); 
-        messageInput.value = ''; 
+        socket.send(message); 
+        messageInput.value = '';
     }
 }
 
-
 function displayMessage(message) {
-    const messageLog = document.getElementById('messageLog');
+    const messageLog = document.getElementById('messagesLog');
+    if (!messageLog) {
+        console.error("messagesLog div not found in the DOM!");
+        return;
+    }
     const messageElement = document.createElement('p');
     messageElement.textContent = message;
     messageLog.appendChild(messageElement);
 }
 
-window.onbeforeunload = () => {
-    socket.close();
-};
+function changeAlias(){
+    const alias = document.getElementById('alias');
+    alias.trim();
+    if(alias!=null && alias.length<10 && alias.length> 1){
+           fetch('api/', {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(alias)
 
-socket.onclose = (event) => {
-    console.log('WebSocket closed:', event);
-};
+           })
+    .then(response => response.json())
+    .then(data => console.log('Success:', data))
+    .catch(error => console.error('Error:', error));
+
+
+     }
+    
+    }
