@@ -6,32 +6,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+
 @Controller
-@RequestMapping("/api")
+@RequestMapping("/")
 public class WebSocketController {
     
-    @Autowired
-    MyWebSocketHandler handler = new MyWebSocketHandler();
+    private final AliasService aliasService;
 
+    @Autowired
+    public WebSocketController(AliasService aliasService){
+        this.aliasService = aliasService;
+    }
+
+    @PutMapping("changeAlias/{aliasName}")
+    public String putAlias(@PathVariable String aliasName, HttpServletRequest request) {
+       HttpSession session = request.getSession(false);
+            if (session != null) {
+                 session.getId();
+            } else {
+                return "No active session found";
+            }
+
+            aliasService.changeAlias(aliasName, session.getId());
+
+            return "Change Successful!";
+    }
 
 
     @GetMapping("/chatroom")
     public String chatPage() {
         return "index";  
     }
-    @PutMapping("/{alias}")
-    public String changeAlias(@PathVariable String alias){
+   
 
-        if(handler.changeAlias(alias)){
-            return "Alias Changed Successfully.";
-        }
-        return "Alias taken.";
-    }
-
-   /*  @MessageMapping("/sendMessage") 
-    @SendTo("/chatroom/messages")  
-    public String sendMessage(String message) {
-        System.out.println("Received message: " + message);
-        return message; 
-    }*/
 }
