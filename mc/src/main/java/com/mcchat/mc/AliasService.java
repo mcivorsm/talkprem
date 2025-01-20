@@ -1,46 +1,38 @@
 package com.mcchat.mc;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.stereotype.Service;
 
 @Service
 public class AliasService {
    
-    @Autowired
-    private final  AliasRepository aliasRepository;
-
    
-    public AliasService(AliasRepository aliasRepository){
-        this.aliasRepository = aliasRepository;
-    }
+   private final Set<Alias> aliasSet = ConcurrentHashMap.newKeySet();
 
-    public Alias saveAlias(Alias alias){
-        return aliasRepository.save(alias);
-    }
-
-    public boolean changeAlias(String aliasName, String sessionId){
-  
-         Alias aliasToChange = aliasRepository.findById(sessionId).orElse(null);
-
-        
-         if (aliasToChange == null) {
-             
-             return false;
-         }
- 
-       
-         aliasToChange.setAliasName(aliasName);  
- 
-
-         aliasRepository.save(aliasToChange);
- 
-
-         return true;
-    }
-
-  
-
-
-    
-
+        public boolean changeAlias(String name, String sessionId){
+                for (Alias alias : aliasSet) {
+                    if(alias.getAliasName().equals(name) && alias.getSessionId().equals(sessionId)){
+                        alias.setAliasName(name);
+                        System.out.println("ALIAS CHANGED");
+                        return true;
+                    }
+                }
+                System.out.println("Alias change failed due to a taken name or invalid sessionId name combo.");
+                return false;
+            }
+        public boolean removeAlias(String sessionId){
+                for (Alias alias: aliasSet){
+                    if(alias.getSessionId().equals(sessionId)){
+                        aliasSet.remove(alias);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        public void addAlias(Alias alias){
+            aliasSet.add(alias);
+             }
+      
 }

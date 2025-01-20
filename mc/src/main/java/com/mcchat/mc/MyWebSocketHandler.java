@@ -7,6 +7,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.websocket.OnClose;
 
 
@@ -30,8 +31,12 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         String aliasName = generateAlias();
         Alias alias = new Alias(aliasName, session.getId());
 
-        aliasService.saveAlias(alias);
+        aliasService.addAlias(alias);
 
+        HttpSession httpSession = (HttpSession) session.getAttributes().get("HTTP_SESSION");
+        if (httpSession != null) {
+            httpSession.setAttribute("websocketSessionId", session.getId());
+        }
       
     }
 

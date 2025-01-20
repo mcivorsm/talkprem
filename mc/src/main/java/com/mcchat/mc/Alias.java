@@ -1,12 +1,11 @@
 package com.mcchat.mc;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
-@Entity
-public class Alias {
+
+
+public class Alias  {
     
-    @Id
+   
     private String sessionId;  
 
     private String aliasName;
@@ -30,6 +29,20 @@ public class Alias {
 
     public void setAliasName(String aliasName) {
         this.aliasName = aliasName;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+
+        Alias alias = (Alias)obj;
+        if(alias.getAliasName().equals(this.aliasName)){
+            if(alias.getSessionId().equals(this.sessionId)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

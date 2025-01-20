@@ -37,19 +37,21 @@ function displayMessage(message) {
 }
 
 function changeAlias(){
-    const alias = document.getElementById('alias');
-    alias.trim();
+    var alias = document.getElementById('username').value;
+    alias = alias.trim();
     if(alias!=null && alias.length<10 && alias.length> 1){
-           fetch('api/', {
+        console.log("Enter API fetch");
+           fetch('http://localhost:8080/changeAlias/{aliasName}', {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(alias)
 
            })
-    .then(response => response.json())
+    .then(response => response.text())
     .then(data => console.log('Success:', data))
     .catch(error => console.error('Error:', error));
 
+   
 
      }
     
