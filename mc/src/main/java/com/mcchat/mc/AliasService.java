@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 public class AliasService {
    
    
-   private final Set<Alias> aliasSet = ConcurrentHashMap.newKeySet();
+   private final  Set<Alias> aliasSet = ConcurrentHashMap.newKeySet();
 
-        public boolean changeAlias(String name, String sessionId){
+        public synchronized  boolean  changeAlias(String name, String sessionId){
                 for (Alias alias : aliasSet) {
                     if(alias.getAliasName().equals(name) && alias.getSessionId().equals(sessionId)){
                         alias.setAliasName(name);
@@ -22,7 +22,7 @@ public class AliasService {
                 System.out.println("Alias change failed due to a taken name or invalid sessionId name combo.");
                 return false;
             }
-        public boolean removeAlias(String sessionId){
+        public synchronized boolean removeAlias(String sessionId){
                 for (Alias alias: aliasSet){
                     if(alias.getSessionId().equals(sessionId)){
                         aliasSet.remove(alias);
@@ -31,7 +31,7 @@ public class AliasService {
                 }
                 return false;
             }
-        public void addAlias(Alias alias){
+        public synchronized void addAlias(Alias alias){
             aliasSet.add(alias);
              }
       

@@ -1,5 +1,7 @@
 package com.mcchat.mc;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -27,9 +29,17 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         System.out.println("New client connected: " + session.getId());
         sessionManager.addSession(session);
-     
+
+        Map<String, Object> cookieAttributes = session.getAttributes();
+        String sessionId = (String)cookieAttributes.get("sessionCookie=");
+        System.out.println(cookieAttributes.get("sessionCookie="));
+        if (sessionId != null) {
+            System.out.println("Cookie Value: " + sessionId);
+        } else {
+            System.out.println("Cookie not found");
+        }
         String aliasName = generateAlias();
-        Alias alias = new Alias(aliasName, session.getId());
+        Alias alias = new Alias(aliasName, sessionId);
 
         aliasService.addAlias(alias);
 

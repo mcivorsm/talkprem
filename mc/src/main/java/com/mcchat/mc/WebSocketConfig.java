@@ -9,6 +9,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 
 
 
+
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
@@ -22,7 +23,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry){
-        registry.addHandler(new MyWebSocketHandler(as), "/websocket").setAllowedOrigins("*");
+        registry.addHandler(new MyWebSocketHandler(as), "/websocket")
+        .addInterceptors(new CustomHandshakeInterceptor())
+        .setAllowedOrigins("*");
         
     }
   
