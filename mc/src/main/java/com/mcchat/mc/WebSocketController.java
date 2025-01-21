@@ -1,15 +1,13 @@
 package com.mcchat.mc;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/")
@@ -17,24 +15,34 @@ public class WebSocketController {
     
     private final AliasService aliasService;
 
-    @Autowired
+   
     public WebSocketController(AliasService aliasService){
         this.aliasService = aliasService;
     }
+   
+    @GetMapping("/set-cookie")
+    public ResponseEntity<Void> setCookie() {
+        String sessionId = "sid" + (int) (Math.random() * 10000);
+        System.out.println("Setting Session Cookie: " + sessionId);
+        
+        return ResponseEntity.ok()
+                .header("Set-Cookie", "sessionCookie=" + sessionId + "; Path=/; Domain=localhost; Secure; HttpOnly; SameSite=None")
+                .build();
+    }
 
-    @CrossOrigin(origins = "*")
+   
     @PutMapping("changeAlias/{aliasName}")
     @ResponseBody
-    public String putAlias(@PathVariable String aliasName, HttpSession httpSession) {
+    public String putAlias(@PathVariable String aliasName, @CookieValue("sessionCookie=") String sessionId) {
         System.out.println("Change Alias Controller Point Hit***");
     
-       String websocketSessionId = (String) httpSession.getAttribute("websocketSessionId");
+      
         
-       if (websocketSessionId == null) {
+       if (sessionId == null) {
            return "No active WebSocket session found";
        }
 
-            aliasService.changeAlias(aliasName, websocketSessionId);
+            aliasService.changeAlias(aliasName, sessionId);
 
             return "Change Successful!";
     }

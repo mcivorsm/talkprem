@@ -1,6 +1,6 @@
 package com.mcchat.mc;
 
-import java.util.Map;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
     private final WebSocketSessionManager sessionManager = new WebSocketSessionManager();
     private final AliasService aliasService;
 
-    @Autowired
+  
     public MyWebSocketHandler(AliasService aliasService){
         this.aliasService = aliasService;
     }
@@ -30,9 +30,27 @@ public class MyWebSocketHandler extends TextWebSocketHandler {
         System.out.println("New client connected: " + session.getId());
         sessionManager.addSession(session);
 
-        Map<String, Object> cookieAttributes = session.getAttributes();
-        String sessionId = (String)cookieAttributes.get("sessionCookie=");
-        System.out.println(cookieAttributes.get("sessionCookie="));
+        String sessionId = null;
+
+        var headers = session.getHandshakeHeaders();
+
+        System.out.println("HEADERS: " + headers);
+        List<String> cookieHeaders = headers.get("Cookies");
+        if(cookieHeaders!=null){
+            for(String cookieHeader: cookieHeaders){
+                String[] cookies = cookieHeader.split(";");
+                for(String cookie: cookies){
+                    if(cookie.startsWith("sessionCookie")){
+                        sessionId = cookie.substring("sessionCookie=".length());
+                        System.out.println("Session ID from cookie: " + sessionId);
+                        session.getAttributes().put("sessionId", sessionId);
+                    }
+                }
+            }
+        }else{
+            System.err.println("No Cookies Found");
+        }
+
         if (sessionId != null) {
             System.out.println("Cookie Value: " + sessionId);
         } else {
